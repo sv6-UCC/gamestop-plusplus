@@ -1,17 +1,22 @@
 #include <iostream>
+#include "user.cpp"
 using namespace std;
 
 void show_menu() {
+    vector<user> listOfUsers = {
+        {"admin", "password", true, false}
+    };
     while (true) {
         int option;
         cout << "Welcome to GameShop-PlusPlus!\n";
         cout << "Choose an option:\n";
         cout << "1. Games\n";
         cout << "2. Enquiries\n";
-        cout << "3. Exit\n";
+        cout << "3. Admin\n";
+        cout << "4. Exit\n";
         cin >> option;
 
-        if (option == 3) {
+        if (option == 4) {
             cout << "Goodbye!\n";
             break;
         }
@@ -97,7 +102,45 @@ void show_menu() {
                         break;
                 }
             }
-        } else {
+        } else if (option == 3) {
+            while (true)
+            {
+                string username; 
+                cout << "Enter username: ";
+                cin >> username;
+                string password;
+                cout << "Enter password: ";
+                cin >> password;
+                for (user aUser : listOfUsers) {
+                    if (aUser.username == username && aUser.password == password) {
+                        if (aUser.isAdmin) {
+                            cout << "Welcome, " << aUser.username << " (Admin)\n";
+                        } else {
+                            cout << "Welcome, " << aUser.username << " (User)\n";
+                        }
+                        while (true) {
+                            cout << "1.Admin Stuff\n";
+                            cout << "2. Log Out\n";
+                            int admin_choice;
+                            cin >> admin_choice;
+                            switch (admin_choice) {
+                                case 1:
+                                    cout << "<Insert boring tasks here>\n\n";
+                                case 2:
+                                    break;
+                                default:
+                                    cout << "Invalid option. Please choose 1 or 2\n";
+                                    break;
+                            }
+                        }
+                    }
+                    else {
+                        cout << "Invalid username or password.\n";
+                    }
+                }
+                break;
+            }
+        }else {
             cout << "Invalid option. Please choose 1, 2, or 3\n";
         }
     }
