@@ -3,9 +3,12 @@
 #include <string>
 using namespace std;
 
-struct user {
-  string username;
-  string password;
-  bool isAdmin;
-  bool isLoggedIn = false;
-};
+class User {
+  public:
+      string username;
+      string password;
+      bool isAdmin;
+  
+      User(string uname, string pword, bool admin = false)
+          : username(uname), password(pword), isAdmin(admin){}
+  };
