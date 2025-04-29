@@ -2,271 +2,194 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <limits>
 #include "user.cpp"
+#include "game.cpp"
 
 using namespace std;
 
-void show_menu() {
-    vector<user> listOfUsers = {
-        {"admin", "password", true, false}
+class ShoppingCart {
+    private:
+        vector<Game> cart;
+    public:
+        void addGame(const Game& game) {
+            cart.push_back(game);
+        }
+    
+        void viewCart() const {
+            if (cart.empty()) {
+                cout << "Your cart is empty.\n";
+            } else {
+                cout << "Your Shopping Cart:\n";
+                int count = 1;
+                for (auto& game : cart) {
+                    cout << count++ << ". " << game.title << " - $" << game.price << endl;
+                }
+            }
+        }
+    
+        void checkout() {
+            if (cart.empty()) {
+                cout << "Your cart is empty. Nothing to checkout.\n";
+                return;
+            }
+            double total = 0;
+            for (auto& game : cart) {
+                total += game.price;
+            }
+            cout << "Your total is: $" << total << ". Thank you for your purchase!\n";
+        
+            cart.clear(); //
+        }
     };
-
-    vector<string> shoppingCart = {};
-
-    while (true) {
-        int option;
-        cout << "Welcome to GameShop-PlusPlus!\n";
-        cout << "Choose an option:\n";
-        cout << "1. Games\n";
-        cout << "2. Enquiries\n";
-        cout << "3. Admin\n";
-        cout << "4. Sign Up\n";
-        cout << "5. Log In\n";
-        cout << "6. Exit\n";
-        cin >> option;
-
-        if (option == 6) {
-            cout << "Goodbye!\n";
-            break;
-        }
-
-        if (option == 4) {
-            string username, password;
-            bool usernameExists = false;
-
-            cout << "Enter username: ";
-            cin >> username;
-            cout << "Enter password: ";
-            cin >> password;
-
-            for (user aUser : listOfUsers) {
-                if (aUser.username == username) {
-                    cout << "Sorry, username already exists. Try another.\n";
-                    usernameExists = true;
-                    break;
-                }
+    
+    
+    void showGamesMenu(vector<Game>& games, ShoppingCart& cart) {
+        while (true) {
+            cout << "\nGames Available:\n";
+            int idx = 1;
+            for (auto& game : games) {
+                cout << idx++ << ". " << game.title << " (" << game.category << ") - $" << game.price << endl;
             }
-
-            if (!usernameExists) {
-                user newUser = {username, password, false, false};
-                listOfUsers.push_back(newUser);
-                cout << "Welcome, " << username << "!\n";
-
-                while (true) {
-                    cout << "1. Send a donation\n";
-                    cout << "2. View shopping cart\n";
-                    cout << "3. Log Out\n";
-                    int user_choice;
-                    cin >> user_choice;
-
-                    switch (user_choice) {
-                        case 1:
-                            cout << "Thank you for your donation!\n\n";
-                            break;
-                        case 2:
-                            for (string item : shoppingCart) {
-                                cout << item << "\n";
-                            }
-                            break;
-                        case 3:
-                            cout << "You are now logged out!\n\n";
-                            goto MainMenu;
-                        default:
-                            cout << "Invalid option. Please choose 1 or 2\n";
-                    }
-                }
+            cout << idx << ". Go back\n";
+    
+            int choice;
+            cout << "Select a game to add to cart: ";
+            cin >> choice;
+    
+            if (choice == idx) break;
+    
+            if (choice >= 1 && choice < idx) {
+                cart.addGame(games[choice - 1]);
+                cout << games[choice - 1].title << " added to cart.\n";
+            } else {
+                cout << "Invalid choice.\n";
             }
         }
-
-        if (option == 5) {
-            string username, password;
-            bool found = false;
-
-            cout << "Enter username: ";
-            cin >> username;
-            cout << "Enter password: ";
-            cin >> password;
-
-            for (user aUser : listOfUsers) {
-                if (aUser.username == username && aUser.password == password) {
-                    cout << "Welcome back, " << username << "!\n";
-                    found = true;
-
-                    while (true) {
-                        cout << "1. Send a donation\n";
-                        cout << "2. View shopping cart\n";
-                        cout << "3. Log Out\n";
-                        int user_choice;
-                        cin >> user_choice;
-
-                        switch (user_choice) {
-                            case 1:
-                                cout << "Thank you for your donation!\n\n";
-                                break;
-                            case 2:
-                                for (string item : shoppingCart) {
-                                    cout << item << "\n";
-                                }
-                                break;
-                            case 3:
-                                cout << "You are now logged out!\n\n";
-                                goto MainMenu;
-                            default:
-                                cout << "Invalid option. Please choose 1 or 2\n";
-                        }
-                    }
-                }
-            }
-
-            if (!found) {
-                cout << "Incorrect username or password. Please try again.\n";
-            }
-        }
-
-        if (option == 1) {
-            while (true) {
-                cout << "Categories of Video Games:\n";
-                cout << "1. RPG\n2. Action & Adventure\n3. Retro\n4. Puzzle\n5. Sports\n6. Go back\n";
-                int choice;
-                cin >> choice;
-
-                if (choice == 6) break;
-
-                switch (choice) {
-                    case 1: 
-                    cout << "RPG Games: 1- The Last of Us, 2-Zelda, 3-Walking Dead\n";
-                    cout << "Which game would you like to add to your shopping cart? (Type 4 to go back):\n";
-                    int rpg_choice;
-                    cin >> rpg_choice;
-                    if (rpg_choice == 4) break;
-                    
-                    switch (rpg_choice) {
-                        case 1: shoppingCart.push_back("The Last of Us"); break;
-                        case 2: shoppingCart.push_back("Zelda"); break;
-                        case 3: shoppingCart.push_back("Walking Dead"); break;
-                        default: cout << "Invalid option. Try again.\n";
-                    }
-                    break;
-                    case 2: 
-                    cout << "Action Games: 1- Assassin's Creed, 2- God of War, 3- Resident Evil\n";
-                    cout << "Which game would you like to add to your shopping cart? (Type 4 to go back):\n";
-                    int action_choice;
-                    cin >> action_choice;
-                    if (action_choice == 4) break;
-
-                    switch (action_choice) {
-                        case 1: shoppingCart.push_back("Assassin's Creed"); break;
-                        case 2: shoppingCart.push_back("God of War"); break;
-                        case 3: shoppingCart.push_back("Resident Evil"); break;
-                        default: cout << "Invalid option. Try again.\n";
-                    }
-                    break;
-                    case 3: 
-                    cout << "Retro Games: 1- Tetris, 2- Pac-Man, 3- Pong\n";
-                    cout << "Which game would you like to add to your shopping cart? (Type 4 to go back):\n";
-                    int retro_choice;
-                    cin >> retro_choice;
-                    if (retro_choice == 4) break;
-
-                    switch (retro_choice) {
-                        case 1: shoppingCart.push_back("Tetris"); break;
-                        case 2: shoppingCart.push_back("Pac-Man"); break;
-                        case 3: shoppingCart.push_back("Pong"); break;
-                        default: cout << "Invalid option. Try again.\n";
-                    }
-                    break;
-                    case 4: 
-                    cout << "Puzzle Games: 1- Tetris, 2- Pac-Man, 3- Pong\n";
-                    cout << "Which game would you like to add to your shopping cart? (Type 4 to go back):\n";
-                    int puzzle_choice;
-                    cin >> puzzle_choice;
-                    if (puzzle_choice == 4) break;
-
-                    switch (puzzle_choice) {
-                        case 1: shoppingCart.push_back("Tetris"); break;
-                        case 2: shoppingCart.push_back("Pac-Man"); break;
-                        case 3: shoppingCart.push_back("Pong"); break;
-                        default: cout << "Invalid option. Try again.\n";
-                    }
-                    break;
-                    case 5: 
-                    cout << "Sports Games: 1- FIFA, 2- NHL, 3- NBA\n";
-                    cout << "Which game would you like to add to your shopping cart? (Type 4 to go back):\n";
-                    int sports_choice;
-                    cin >> sports_choice;
-                    if (sports_choice == 4) break;
-
-                    switch (sports_choice) {
-                        case 1: shoppingCart.push_back("FIFA"); break;
-                        case 2: shoppingCart.push_back("NHL"); break;
-                        case 3: shoppingCart.push_back("NBA"); break;
-                        default: cout << "Invalid option. Try again.\n";
-                    }
-                    break;
-                    default: cout << "Invalid option. Try again.\n";
-                }
-            }
-        }
-
-        if (option == 2) {
-            while (true) {
-                cout << "Enquiries:\n1. Upcoming Releases\n2. Opening Hours\n3. Refund Policy\n4. Go back\n";
-                int enquiry_choice;
-                cin >> enquiry_choice;
-
-                if (enquiry_choice == 4) break;
-
-                switch (enquiry_choice) {
-                    case 1: cout << "Upcoming Releases: GTA VI, Half-Life 3, Fallout 77\n"; break;
-                    case 2: cout << "Opening Hours: Whenever we feel like it.\n"; break;
-                    case 3: cout << "Refund Policy: No refunds, sorry!\n"; break;
-                    default: cout << "Invalid option. Try again.\n";
-                }
-            }
-        }
-
-        if (option == 3) {
-            string username, password;
-            bool isAdmin = false;
-
-            cout << "Enter username: ";
-            cin >> username;
-            cout << "Enter password: ";
-            cin >> password;
-
-            for (user aUser : listOfUsers) {
-                if (aUser.username == username && aUser.password == password) {
-                    if (aUser.isAdmin) {
-                        cout << "Welcome Admin, " << username << "!\n";
-                        isAdmin = true;
-                        break;
-                    } else {
-                        cout << "You are not an admin.\n";
-                        break;
-                    }
-                }
-            }
-
-            if (isAdmin) {
-                while (true) {
-                    cout << "Admin Menu:\n1. Admin Stuff\n2. Log Out\n";
-                    int admin_choice;
-                    cin >> admin_choice;
-
-                    if (admin_choice == 2) break;
-
-                    switch (admin_choice) {
-                        case 1: cout << "<Insert boring admin tasks here>\n"; break;
-                        default: cout << "Invalid option. Try again.\n";
-                    }
-                }
-            }
-        }
-        MainMenu:;
     }
-}
-
-int main() {
-    show_menu();
-    return 0;
-}
+    
+    void handleUserMenu(User& currentUser, vector<Game>& games) {
+        ShoppingCart cart;
+        int option;
+    
+        while (true) {
+            cout << "\nWelcome, " << currentUser.username << "!\n";
+            cout << "1. Browse Games\n2. View Cart\n3. Checkout\n4. Donate\n5. Logout\n";
+            cout << "Enter option: ";
+            cin >> option;
+    
+            switch (option) {
+                case 1: showGamesMenu(games, cart); break;
+                case 2: cart.viewCart(); break;
+                case 3: cart.checkout(); break;
+                case 4: cout << "Thank you for your donation!\n"; break;
+                case 5: cout << "Logging out...\n"; return;
+                default: cout << "Invalid choice.\n";
+            }
+        }
+    }
+    
+    void handleAdminMenu(User& adminUser, vector<User>& users) {
+        int option;
+        while (true) {
+            cout << "\nAdmin Menu:\n";
+            cout << "1. View Users\n2. Logout\n";
+            cout << "Enter option: ";
+            cin >> option;
+    
+            if (option == 2) break;
+    
+            switch (option) {
+                case 1:
+                    cout << "\nRegistered Users:\n";
+                    for (auto& u : users) {
+                        cout << "- " << u.username << (u.isAdmin ? " [Admin]" : "") << endl;
+                    }
+                    break;
+                default: cout << "Invalid choice.\n";
+            }
+        }
+    }
+    
+    void mainMenu() {
+        vector<User> users = { User("admin", "admin123", true) };
+        vector<Game> games = {
+            Game("The Last of Us", "RPG", 59.99),
+            Game("Zelda", "RPG", 49.99),
+            Game("Walking Dead", "RPG", 39.99),
+            Game("Assassin's Creed", "Action", 59.99),
+            Game("God of War", "Action", 69.99),
+            Game("Resident Evil", "Action", 39.99),
+            Game("Tetris", "Puzzle", 9.99),
+            Game("Pac-Man", "Retro", 14.99),
+            Game("FIFA", "Sports", 59.99)
+        };
+    
+        int option;
+        while (true) {
+            cout << "\nWelcome to GameShop-PlusPlus!\n";
+            cout << "1. Sign Up\n2. Log In\n3. Exit\n";
+            cout << "Choose an option: ";
+            cin >> option;
+    
+            if (option == 3) {
+                cout << "Goodbye!\n";
+                break;
+            }
+    
+            if (option == 1) {
+                string username, password;
+                cout << "Enter username: ";
+                cin >> username;
+                cout << "Enter password: ";
+                cin >> password;
+            
+                bool exists = false;
+                for (auto& u : users) {
+                    if (u.username == username) {
+                        exists = true;
+                        break;
+                    }
+                }
+            
+                if (exists) {
+                    cout << "Username already exists.\n";
+                } else {
+                    User newUser(username, password);
+                    users.push_back(newUser);
+                    cout << "Account created successfully!\n";
+                    handleUserMenu(newUser, games);
+                }
+            }
+    
+            if (option == 2) {
+                string username, password;
+                cout << "Enter username: ";
+                cin >> username;
+                cout << "Enter password: ";
+                cin >> password;
+    
+                bool found = false;
+                for (auto& u : users) {
+                    if (u.username == username && u.password == password) {
+                        found = true;
+                        if (u.isAdmin) {
+                            handleAdminMenu(u, users);
+                        } else {
+                            handleUserMenu(u, games);
+                        }
+                        break;
+                    }
+                }
+    
+                if (!found) {
+                    cout << "Incorrect username or password.\n";
+                }
+            }
+        }
+    }
+    
+    int main() {
+        mainMenu();
+        return 0;
+    }
